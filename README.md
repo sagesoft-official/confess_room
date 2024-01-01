@@ -3,7 +3,7 @@
  * Copyright © 2024 by Nya-WSL All Rights Reserved. 
  * @Date: 2024-01-01 02:52:15
  * @LastEditors: 狐日泽
- * @LastEditTime: 2024-01-01 05:27:44
+ * @LastEditTime: 2024-01-02 02:36:38
 -->
 # Confess Room
 
@@ -11,7 +11,7 @@
 
 ## USAGE
 
-### SERVER
+### Server
 
 ```
 # Port
@@ -28,7 +28,7 @@ http://127.0.0.1:11452
 
 ```
 
-### LOCAL
+### Local
 
 本程序是基于服务器多用户访问设计的，无法在本地正常运行
 

@@ -3,18 +3,56 @@ Author: Nya-WSL
 Copyright © 2023 by Nya-WSL All Rights Reserved. 
 Date: 2023-12-31 16:43:50
 LastEditors: 狐日泽
-LastEditTime: 2024-01-01 05:26:12
+LastEditTime: 2024-01-02 02:41:48
 '''
 
 import json
 from uuid import uuid4
 from router import Router
+from typing import Optional
 from nicegui import ui, app
+# from nicegui import Client
+# from fastapi import Request
 from datetime import datetime
-from typing import List, Tuple
+from fastapi.responses import RedirectResponse
+# from starlette.middleware.base import BaseHTTPMiddleware
 
 # messages: List[Tuple[str, str, str, str]] = []
+version = "1.1.0"
 app.add_static_files('/static', 'static')
+passwords = {'user1': 'passwd1', 'user2': 'passwd2'}
+
+@ui.page('/login', title="桥洞教堂忏悔室登记处")
+def login() -> Optional[RedirectResponse]:
+    def try_login() -> None:
+        if passwords.get(username.value) == password.value:
+            app.storage.user.update({'user': username.value, 'authenticated': True})
+            ui.open(app.storage.user.get('referrer_path', '/messages'))
+        else:
+            ui.notify('来访登记簿上没有您的名字哦', color='negative')
+    if app.storage.user.get('authenticated'):
+
+        return RedirectResponse('/messages')
+    else:
+        with ui.card().classes('absolute-center'):
+            ui.badge('桥洞教堂忏悔室登记处', outline=True, color='pink').classes('text-xl')
+            username = ui.input('来访人').on('keydown.enter', try_login)
+            password = ui.input('密码', password=True, password_toggle_button=True).on('keydown.enter', try_login)
+            ui.button('登记', on_click=try_login)
+
+@ui.page('/messages', title="桥洞教堂忏悔录")
+def page():
+    if not app.storage.user.get('authenticated'):
+        return RedirectResponse('/login')
+    else:
+        with ui.row():
+            ui.button('Quit', on_click=lambda: (app.storage.user.clear(), ui.open('/')))
+        with ui.card().classes('absolute-center'):
+            with open('message.json', 'r', encoding="utf-8") as f:
+                message_json = json.load(f)
+                for key,value in dict(message_json).items():
+                    with ui.expansion(key).classes('w-full'):
+                        ui.textarea(value=value).classes('text-xl w-full')
 
 @ui.page('/')
 # @ui.page('/{_:path}')
@@ -28,7 +66,8 @@ def main():
 
     @router.add(f'/{page_id}')
     def index():
-        button.set_visibility(False)
+        send_button.set_visibility(False)
+        login_button.set_visibility(False)
 
         def send():
             if text.value == '':
@@ -36,7 +75,7 @@ def main():
                 return
             with open('message.json', 'r', encoding="utf-8") as f:
                 message_json = json.load(f)
-            message_json[f"{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}"] = text.value
+            message_json[f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"] = text.value
             with open('message.json', 'w+', encoding="utf-8") as f:
                 json.dump(message_json, f, indent=4, ensure_ascii=False)
             ui.notify('修女会保佑你的...', type="positive", position="top")
@@ -52,7 +91,8 @@ def main():
 
     ui.query('body').style('background: url("static/bg.jpg") 0px 0px/cover')
     with ui.row():
-        button = ui.button('向桥洞修女发起忏悔', on_click=lambda: router.open(index), color="pink").classes("absolute top-1/2 left-1/2 translate-x-[-50%]")
+        send_button = ui.button('向桥洞修女发起忏悔', on_click=lambda: router.open(index), color="pink").classes("absolute top-1/2 left-1/2 translate-x-[-50%]")
+        login_button = ui.button('桥洞教堂忏悔录', on_click=lambda: ui.open('/login'), color="pink").classes("absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[200%]")
         ui.badge("注意事项", color="lightpink", text_color="white").classes("text-xl absolute top-2/3 left-1/2 translate-x-[-50%]")
         ui.badge("忏悔页面阅后即焚", color="lightpink", text_color="white").classes("text-xl absolute top-2/3 left-1/2 translate-x-[-50%] translate-y-[110%]")
         ui.badge("刷新或关闭后页面将立即销毁", color="lightpink", text_color="white").classes("text-xl absolute top-2/3 left-1/2 translate-x-[-50%] translate-y-[220%]")
@@ -62,4 +102,4 @@ def main():
     # 不可删除
     router.frame().classes('w-full')
 
-ui.run(title="桥洞教堂忏悔室", favicon="static/icon.ico", host="0.0.0.0", port=11452, language="zh-CN", show=False)
+ui.run(title="桥洞教堂忏悔室", favicon="static/icon.ico", host="0.0.0.0", port=11452, language="zh-CN", show=False, storage_secret='YourKey')
