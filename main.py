@@ -3,7 +3,7 @@ Author: Nya-WSL
 Copyright © 2023 by Nya-WSL All Rights Reserved. 
 Date: 2023-12-31 16:43:50
 LastEditors: 狐日泽
-LastEditTime: 2024-01-02 02:47:51
+LastEditTime: 2024-01-02 07:15:00
 '''
 
 import json
@@ -18,12 +18,13 @@ from fastapi.responses import RedirectResponse
 # from starlette.middleware.base import BaseHTTPMiddleware
 
 # messages: List[Tuple[str, str, str, str]] = []
-version = "1.1.0"
+version = "1.1.1"
 app.add_static_files('/static', 'static')
 passwords = {'user1': 'passwd1', 'user2': 'passwd2'}
 
 @ui.page('/login', title="桥洞教堂忏悔室登记处")
 def login() -> Optional[RedirectResponse]:
+    ui.query('body').style('background: url("static/bg.jpg") 0px 0px/cover')
     def try_login() -> None:
         if passwords.get(username.value) == password.value:
             app.storage.user.update({'user': username.value, 'authenticated': True})
@@ -38,21 +39,27 @@ def login() -> Optional[RedirectResponse]:
             ui.badge('桥洞教堂忏悔室登记处', outline=True, color='pink').classes('text-xl')
             username = ui.input('来访人').on('keydown.enter', try_login)
             password = ui.input('密码', password=True, password_toggle_button=True).on('keydown.enter', try_login)
-            ui.button('登记', on_click=try_login)
+            with ui.row():
+                ui.button('登记', on_click=try_login)
+                ui.button('返回', on_click=lambda: ui.open("/"))
 
 @ui.page('/messages', title="桥洞教堂忏悔录")
 def page():
+    ui.query('body').style('background: url("static/bg.jpg") 0px 0px/cover')
     if not app.storage.user.get('authenticated'):
         return RedirectResponse('/login')
     else:
         with ui.row():
             ui.button('Quit', on_click=lambda: (app.storage.user.clear(), ui.open('/')))
-        with ui.card().classes('absolute-center'):
-            with open('message.json', 'r', encoding="utf-8") as f:
-                message_json = json.load(f)
-                for key,value in dict(message_json).items():
-                    with ui.expansion(key).classes('w-full'):
-                        ui.textarea(value=value).classes('text-xl w-full')
+        with open('message.json', 'r', encoding="utf-8") as f:
+            message_json = json.load(f)
+            with ui.card().classes('absolute-center'):
+                if message_json == {}:
+                    ui.badge('目前没人前来忏悔...', outline=True, color="pink").classes('text-xl')
+                else:
+                    for key,value in dict(message_json).items():
+                        with ui.expansion(key).classes('w-full'):
+                            ui.textarea(value=value).classes('text-xl w-full')
 
 @ui.page('/')
 # @ui.page('/{_:path}')
