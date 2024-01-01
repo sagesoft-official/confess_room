@@ -3,7 +3,7 @@ Author: Nya-WSL
 Copyright © 2023 by Nya-WSL All Rights Reserved. 
 Date: 2023-12-31 16:43:50
 LastEditors: 狐日泽
-LastEditTime: 2024-01-02 02:41:48
+LastEditTime: 2024-01-02 02:47:51
 '''
 
 import json
@@ -61,6 +61,10 @@ def main():
     page_id = str(uuid4())
 
     @router.add('/')
+    def init():
+        ui.badge('桥洞教堂赎罪券投放处', outline=True).classes('text-2xl absolute top-1/3 left-1/2 translate-x-[-50%]')
+
+    @router.add('/nicegui/')
     def init():
         ui.badge('桥洞教堂赎罪券投放处', outline=True).classes('text-2xl absolute top-1/3 left-1/2 translate-x-[-50%]')
 
