@@ -3,7 +3,7 @@
  * Copyright © 2024 by Nya-WSL All Rights Reserved. 
  * @Date: 2024-01-01 02:52:15
  * @LastEditors: 狐日泽
- * @LastEditTime: 2024-01-02 02:36:38
+ * @LastEditTime: 2024-01-02 07:20:01
 -->
 # Confess Room
 
@@ -16,6 +16,7 @@
 ```
 # Port
 
+pip install -r requirements.txt
 python main.py
 
 http://127.0.0.1:11452
