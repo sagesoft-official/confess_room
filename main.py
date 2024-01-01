@@ -3,18 +3,56 @@ Author: Nya-WSL
 Copyright © 2023 by Nya-WSL All Rights Reserved. 
 Date: 2023-12-31 16:43:50
 LastEditors: 狐日泽
-LastEditTime: 2024-01-01 05:26:12
+LastEditTime: 2024-01-01 23:00:18
 '''
 
 import json
+import time
 from uuid import uuid4
 from router import Router
-from nicegui import ui, app
+from typing import Optional
+from nicegui import ui, app, Client
+# from nicegui import Client
+# from fastapi import Request
 from datetime import datetime
-from typing import List, Tuple
+from fastapi.responses import RedirectResponse
+# from starlette.middleware.base import BaseHTTPMiddleware
 
 # messages: List[Tuple[str, str, str, str]] = []
 app.add_static_files('/static', 'static')
+passwords = {'Sage': 'sangyi45sui', 'SageSoft': 'sagesoft'}
+
+@ui.page('/login', title="桥洞教堂忏悔室登记处")
+def login() -> Optional[RedirectResponse]:
+    def try_login() -> None:
+        if passwords.get(username.value) == password.value:
+            app.storage.user.update({'user': username.value, 'authenticated': True})
+            ui.open(app.storage.user.get('referrer_path', '/messages'))
+        else:
+            ui.notify('来访登记簿上没有您的名字哦', color='negative')
+
+    if app.storage.user.get('authenticated', True):
+        return RedirectResponse('/messages')
+    else:
+        with ui.card().classes('absolute-center'):
+            ui.badge('桥洞教堂忏悔室登记处', outline=True, color='pink').classes('text-xl')
+            username = ui.input('来访人').on('keydown.enter', try_login)
+            password = ui.input('密码', password=True, password_toggle_button=True).on('keydown.enter', try_login)
+            ui.button('登记', on_click=try_login)
+
+@ui.page('/messages', title="桥洞教堂忏悔录")
+def page():
+    if app.storage.user.get('authenticated', False) or app.storage.user.get('authenticated', ''):
+        return RedirectResponse('/login')
+    with ui.card().classes('absolute-center'):
+        with open('message.json', 'r', encoding="utf-8") as f:
+            message_json = json.load(f)
+            for key,value in dict(message_json).items():
+                ui.button(key, on_click=lambda: ui.open(f'/{str(key)}'))
+                @ui.page(f'/{str(key)}')
+                def message():
+                    ui.textarea(value=value).classes('text-xl w-full')
+                    ui.button('Back', on_click=lambda: ui.open('/messages')).classes('absolute-center')
 
 @ui.page('/')
 # @ui.page('/{_:path}')
@@ -62,4 +100,4 @@ def main():
     # 不可删除
     router.frame().classes('w-full')
 
-ui.run(title="桥洞教堂忏悔室", favicon="static/icon.ico", host="0.0.0.0", port=11452, language="zh-CN", show=False)
+ui.run(title="桥洞教堂忏悔室", favicon="static/icon.ico", host="0.0.0.0", port=11452, language="zh-CN", show=False, storage_secret='SageSoft')
