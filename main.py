@@ -3,9 +3,10 @@ Author: Nya-WSL
 Copyright © 2023 by Nya-WSL All Rights Reserved. 
 Date: 2023-12-31 16:43:50
 LastEditors: 狐日泽
-LastEditTime: 2024-01-02 07:15:00
+LastEditTime: 2024-01-05 15:31:33
 '''
 
+import os
 import json
 from uuid import uuid4
 from router import Router
@@ -18,7 +19,7 @@ from fastapi.responses import RedirectResponse
 # from starlette.middleware.base import BaseHTTPMiddleware
 
 # messages: List[Tuple[str, str, str, str]] = []
-version = "1.1.1"
+version = "1.1.2"
 app.add_static_files('/static', 'static')
 passwords = {'user1': 'passwd1', 'user2': 'passwd2'}
 
@@ -51,15 +52,20 @@ def page():
     else:
         with ui.row():
             ui.button('Quit', on_click=lambda: (app.storage.user.clear(), ui.open('/')))
-        with open('message.json', 'r', encoding="utf-8") as f:
-            message_json = json.load(f)
-            with ui.card().classes('absolute-center'):
-                if message_json == {}:
-                    ui.badge('目前没人前来忏悔...', outline=True, color="pink").classes('text-xl')
-                else:
-                    for key,value in dict(message_json).items():
-                        with ui.expansion(key).classes('w-full'):
-                            ui.textarea(value=value).classes('text-xl w-full')
+        if not os.path.exists('message.json'):
+            with open('message.json', 'w', encoding="utf-8") as f:
+                f.write(r'{}')
+                message_json = {}
+        else:
+            with open('message.json', 'r', encoding="utf-8") as f:
+                message_json = json.load(f)
+        with ui.card().classes('absolute-center'):
+            if message_json == {}:
+                ui.badge('目前没人前来忏悔...', outline=True, color="pink").classes('text-xl')
+            else:
+                for key,value in dict(message_json).items():
+                    with ui.expansion(key).classes('w-full'):
+                        ui.textarea(value=value).classes('text-xl w-full')
 
 @ui.page('/')
 # @ui.page('/{_:path}')
@@ -84,8 +90,13 @@ def main():
             if text.value == '':
                 ui.notify('虚假的赎罪是会被修女诅咒的！', type="negative", position="top")
                 return
-            with open('message.json', 'r', encoding="utf-8") as f:
-                message_json = json.load(f)
+            if not os.path.exists('message.json'):
+                with open('message.json', 'w', encoding="utf-8") as f:
+                    f.write(r'{}')
+                    message_json = {}
+            else:
+                with open('message.json', 'r', encoding="utf-8") as f:
+                    message_json = json.load(f)
             message_json[f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"] = text.value
             with open('message.json', 'w+', encoding="utf-8") as f:
                 json.dump(message_json, f, indent=4, ensure_ascii=False)
