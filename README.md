@@ -3,7 +3,7 @@
  * Copyright © 2024 by Nya-WSL All Rights Reserved. 
  * @Date: 2024-01-01 02:52:15
  * @LastEditors: 狐日泽
- * @LastEditTime: 2024-01-02 07:20:01
+ * @LastEditTime: 2024-01-05 15:21:42
 -->
 # Confess Room
 
@@ -43,6 +43,16 @@ http://127.0.0.1:11452
 
 - 如有问题可尝试删除 `ui.textarea` 和 `ui.button` 以外的组件或自行适配
 
-- 移动设备无法拖动文本区，这是组件限制，我们无法解决
+- 移动设备无法拖动文本区，这是组件限制
 
-- 暂无配套的读取棉花糖
+### URL
+
+- `/` 主页面
+
+- `/nicegui/` server的ws反代
+
+- `/login` 登陆页面
+
+- `/messages` 棉花糖读取页面
+
+- `/{uuid}` 投稿页面
