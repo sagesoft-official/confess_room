@@ -3,7 +3,7 @@ Author: Nya-WSL
 Copyright © 2023 by Nya-WSL All Rights Reserved. 
 Date: 2023-12-31 16:43:50
 LastEditors: 狐日泽
-LastEditTime: 2024-01-05 15:31:33
+LastEditTime: 2024-01-05 19:53:52
 '''
 
 import os
@@ -21,7 +21,7 @@ from fastapi.responses import RedirectResponse
 # messages: List[Tuple[str, str, str, str]] = []
 version = "1.1.2"
 app.add_static_files('/static', 'static')
-passwords = {'user1': 'passwd1', 'user2': 'passwd2'}
+passwords = {'user1': 'passwd', 'user2': 'passwd'}
 
 @ui.page('/login', title="桥洞教堂忏悔室登记处")
 def login() -> Optional[RedirectResponse]:
@@ -52,6 +52,7 @@ def page():
     else:
         with ui.row():
             ui.button('Quit', on_click=lambda: (app.storage.user.clear(), ui.open('/')))
+            ui.button('Back', on_click=lambda: ui.open('/'))
         if not os.path.exists('message.json'):
             with open('message.json', 'w', encoding="utf-8") as f:
                 f.write(r'{}')
@@ -59,13 +60,17 @@ def page():
         else:
             with open('message.json', 'r', encoding="utf-8") as f:
                 message_json = json.load(f)
-        with ui.card().classes('absolute-center'):
-            if message_json == {}:
+        
+        if message_json == {}:
+            with ui.card().classes('absolute-center pink'):
                 ui.badge('目前没人前来忏悔...', outline=True, color="pink").classes('text-xl')
-            else:
-                for key,value in dict(message_json).items():
-                    with ui.expansion(key).classes('w-full'):
-                        ui.textarea(value=value).classes('text-xl w-full')
+        else:
+            for key,value in dict(message_json).items():
+                with ui.expansion(key).classes('w-full'):
+                    # ui.textarea(value=value).classes('text-xl w-full')
+                    ui.chat_message(f'<font size="5">{value}</font>',
+            avatar='/static/bg.jpg', text_html=True).props('bg-color="green-1"')
+                ui.separator()
 
 @ui.page('/')
 # @ui.page('/{_:path}')
