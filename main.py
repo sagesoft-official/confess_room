@@ -3,11 +3,12 @@ Author: Nya-WSL
 Copyright © 2023 by Nya-WSL All Rights Reserved. 
 Date: 2023-12-31 16:43:50
 LastEditors: 狐日泽
-LastEditTime: 2024-01-05 19:53:52
+LastEditTime: 2024-01-05 22:47:14
 '''
 
 import os
 import json
+import hashlib
 from uuid import uuid4
 from router import Router
 from typing import Optional
@@ -19,15 +20,15 @@ from fastapi.responses import RedirectResponse
 # from starlette.middleware.base import BaseHTTPMiddleware
 
 # messages: List[Tuple[str, str, str, str]] = []
-version = "1.1.2"
+version = "1.1.3"
 app.add_static_files('/static', 'static')
-passwords = {'user1': 'passwd', 'user2': 'passwd'}
+passwords = {'Sage': 'b10b88afa32c8c74941f600bb4507e6cbd5fb336bc82390ab0bbe9da07f08e90', 'sage': 'b10b88afa32c8c74941f600bb4507e6cbd5fb336bc82390ab0bbe9da07f08e90', 'sagesoft': '6a2c966fa4655342b1e8e2e2978a666bbb5971722c2f173ac13e848a0728f68f'}
 
 @ui.page('/login', title="桥洞教堂忏悔室登记处")
 def login() -> Optional[RedirectResponse]:
     ui.query('body').style('background: url("static/bg.jpg") 0px 0px/cover')
     def try_login() -> None:
-        if passwords.get(username.value) == password.value:
+        if passwords.get(username.value) == hashlib.sha256(str(password.value).encode('utf-8')).hexdigest():
             app.storage.user.update({'user': username.value, 'authenticated': True})
             ui.open(app.storage.user.get('referrer_path', '/messages'))
         else:
@@ -129,4 +130,4 @@ def main():
     # 不可删除
     router.frame().classes('w-full')
 
-ui.run(title="桥洞教堂忏悔室", favicon="static/icon.ico", host="0.0.0.0", port=11452, language="zh-CN", show=False, storage_secret='YourKey')
+ui.run(title="桥洞教堂忏悔室", favicon="static/icon.ico", host="0.0.0.0", port=11452, language="zh-CN", show=False, storage_secret='c2b95787b44c084fc7c7d2c8422917913e0b1a673892f7d1f644bcf73c133410')
