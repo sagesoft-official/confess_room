@@ -3,7 +3,7 @@ Author: Nya-WSL
 Copyright © 2023 by Nya-WSL All Rights Reserved. 
 Date: 2023-12-31 16:43:50
 LastEditors: 狐日泽
-LastEditTime: 2024-01-06 06:19:25
+LastEditTime: 2024-01-07 18:31:06
 '''
 
 import os
@@ -20,9 +20,20 @@ from fastapi.responses import RedirectResponse
 # from starlette.middleware.base import BaseHTTPMiddleware
 
 # messages: List[Tuple[str, str, str, str]] = []
-version = "1.2.0"
+version = "1.2.1"
 app.add_static_files('/static', 'static')
 passwords = {'Sage': 'b10b88afa32c8c74941f600bb4507e6cbd5fb336bc82390ab0bbe9da07f08e90', 'sage': 'b10b88afa32c8c74941f600bb4507e6cbd5fb336bc82390ab0bbe9da07f08e90', 'sagesoft': '6a2c966fa4655342b1e8e2e2978a666bbb5971722c2f173ac13e848a0728f68f'}
+
+def clear_user_data():
+    if not os.path.exists('/home/cron'):
+        os.system('mkdir /home/cron')
+    else:
+        cmd= '@daily rm -rf /var/www/sage/sendbox/.nicegui/storage-user-* >> "/home/cron/confess.log" 2>&1 & # confess_room job'
+        cron_data = "@daily rm -rf /var/www/sage/sendbox/.nicegui/storage-user-* >> /home/cron/confess.log 2>&1 & # confess_room job\n"
+        with open('/var/spool/cron/crontabs/root', 'r', encoding="utf-8") as f:
+            cron = f.readlines()
+            if not cron_data in cron:
+                os.system(f'crontab -l > cron_tmp && echo "{cmd}" >> cron_tmp && crontab cron_tmp && rm -f cron_tmp')
 
 @ui.page('/login', title="桥洞教堂忏悔室登记处")
 def login() -> Optional[RedirectResponse]:
@@ -112,10 +123,11 @@ def main():
             with open('message.json', 'w+', encoding="utf-8") as f:
                 json.dump(message_json, f, indent=4, ensure_ascii=False)
             ui.notify('修女会保佑你的...', type="positive", position="top")
-
-        def call():
-            send()
             text.set_value('')
+
+        # def call():
+        #     send()
+        #     text.set_value('')
 
         def back():
             with ui.dialog() as dialog, ui.card():
@@ -130,7 +142,7 @@ def main():
             text = ui.textarea(placeholder='忏悔内容').props('rounded outlined input-class=mx-3"').classes('flex-grow')
             # ui.button('忏悔', on_click=lambda: call(), color='#E6354F').classes("absolute top-1/2 left-1/2 translate-x-[-50%] text-white")
             with ui.row().classes("absolute-center text-white"):
-                ui.button('忏悔', on_click=lambda: call(), color='#E6354F').classes("text-white")
+                ui.button('忏悔', on_click=lambda: send(), color='#E6354F').classes("text-white")
                 ui.button('返回', on_click=lambda: back(), color='#E6354F').classes("text-white")
         ui.markdown('桑尾草原赎罪券投放处').classes('text-xs self-end mr-8 p-2').style('color: rgb(230 53 79)')
 
@@ -148,4 +160,5 @@ def main():
     # 不可删除
     router.frame().classes('w-full')
 
+clear_user_data()
 ui.run(title="桥洞教堂忏悔室", favicon="static/icon.ico", host="0.0.0.0", port=11452, language="zh-CN", show=False, storage_secret='c2b95787b44c084fc7c7d2c8422917913e0b1a673892f7d1f644bcf73c133410')
