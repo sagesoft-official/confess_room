@@ -3,7 +3,7 @@ Author: Nya-WSL
 Copyright © 2023 by Nya-WSL All Rights Reserved. 
 Date: 2023-12-31 16:43:50
 LastEditors: 狐日泽
-LastEditTime: 2024-01-07 18:31:06
+LastEditTime: 2024-01-08 12:26:41
 '''
 
 import os
@@ -28,8 +28,8 @@ def clear_user_data():
     if not os.path.exists('/home/cron'):
         os.system('mkdir /home/cron')
     else:
-        cmd= '@daily rm -rf /var/www/sage/sendbox/.nicegui/storage-user-* >> "/home/cron/confess.log" 2>&1 & # confess_room job'
-        cron_data = "@daily rm -rf /var/www/sage/sendbox/.nicegui/storage-user-* >> /home/cron/confess.log 2>&1 & # confess_room job\n"
+        cmd= '@daily rm -rf /var/www/sage/sendbox/.nicegui/storage_user_* >> "/home/cron/confess.log" 2>&1 & # confess_room job'
+        cron_data = "@daily rm -rf /var/www/sage/sendbox/.nicegui/storage_user_* >> /home/cron/confess.log 2>&1 & # confess_room job\n"
         with open('/var/spool/cron/crontabs/root', 'r', encoding="utf-8") as f:
             cron = f.readlines()
             if not cron_data in cron:
@@ -151,7 +151,7 @@ def main():
         send_button = ui.button('向桥洞修女发起忏悔', on_click=lambda: router.open(index), color="#E6354F").classes("absolute top-1/2 left-1/2 translate-x-[-50%] text-white")
         login_button = ui.button('桥洞教堂忏悔录', on_click=lambda: ui.open('/login'), color="#E6354F").classes("absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[200%] text-white bg-transparent")
         with ui.badge(outline=True, color="", text_color="#E6354F").classes("absolute top-2/3 left-1/2 translate-x-[-50%]"):
-            ui.html('<center>注意事项<br>忏悔页面阅后即焚<br>刷新或关闭后页面将立即销毁<br>如需多次忏悔，可在忏悔后继续忏悔<br>请勿忏悔违法、违规、禁播内容</center>').classes('text-xl')
+            ui.html('<center>注意事项<br>忏悔页面阅后即焚<br>刷新或关闭后页面将立即销毁<br>如需多次忏悔，可在忏悔后继续忏悔</center>').classes('text-xl')
             # ui.badge("忏悔页面阅后即焚", color="lightpink", text_color="white").classes("text-xl absolute top-2/3 left-1/2 translate-x-[-50%] translate-y-[110%]")
             # ui.badge("刷新或关闭后页面将立即销毁", color="lightpink", text_color="white").classes("text-xl absolute top-2/3 left-1/2 translate-x-[-50%] translate-y-[220%]")
             # ui.badge("如需多次忏悔，可在忏悔后继续忏悔", color="lightpink", text_color="white").classes("text-xl absolute top-2/3 left-1/2 translate-x-[-50%] translate-y-[330%]")
