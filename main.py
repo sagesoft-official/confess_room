@@ -3,7 +3,7 @@ Author: Nya-WSL
 Copyright © 2023 by Nya-WSL All Rights Reserved. 
 Date: 2023-12-31 16:43:50
 LastEditors: 狐日泽
-LastEditTime: 2024-01-08 12:26:41
+LastEditTime: 2024-01-09 23:35:31
 '''
 
 import os
@@ -20,7 +20,7 @@ from fastapi.responses import RedirectResponse
 # from starlette.middleware.base import BaseHTTPMiddleware
 
 # messages: List[Tuple[str, str, str, str]] = []
-version = "1.2.1"
+version = "1.2.2"
 app.add_static_files('/static', 'static')
 passwords = {'Sage': 'b10b88afa32c8c74941f600bb4507e6cbd5fb336bc82390ab0bbe9da07f08e90', 'sage': 'b10b88afa32c8c74941f600bb4507e6cbd5fb336bc82390ab0bbe9da07f08e90', 'sagesoft': '6a2c966fa4655342b1e8e2e2978a666bbb5971722c2f173ac13e848a0728f68f'}
 
@@ -45,7 +45,6 @@ def login() -> Optional[RedirectResponse]:
         else:
             ui.notify('来访登记簿上没有您的名字哦', color='negative')
     if app.storage.user.get('authenticated'):
-
         return RedirectResponse('/messages')
     else:
         with ui.card().classes('absolute-center'):
@@ -85,6 +84,24 @@ def page():
                     else:
                         ui.chat_message(value, avatar='static/bg.jpg').props('bg-color="green-1"').classes('text-h6')
                 ui.separator()
+
+@ui.page('/update', title="桥洞教堂忏悔室装修日志")
+def page():
+    with ui.row():
+        ui.button("返回主页", on_click=lambda: ui.open('/'), color="#E6354F").classes("text-white")
+        ui.button("GitHub", on_click=lambda: ui.open('https://github.com/sagesoft-official/confess_room', new_tab=True), color="#E6354F").classes("text-white")
+    with ui.timeline(side='right', layout='comfortable', color='red'):
+        ui.timeline_entry('Confess Room Decoration Log', heading=True)
+        ui.timeline_entry(title='Initial commit', subtitle='2023-12-31', icon='rocket')
+        ui.timeline_entry(title='Release of 1.0.0', subtitle='2023-12-31')
+        ui.timeline_entry('新增登录页面 | 新增棉花糖读取页面', title='Release of 1.1.0', subtitle='2024-01-01')
+        ui.timeline_entry('登录界面新建返回按钮 | 登录界面和忏悔录新增背景 | 优化当棉花糖为空时忏悔录的显示效果', title='Release of 1.1.1', subtitle='2024-01-01')
+        ui.timeline_entry('重构棉花糖页面布局 | 棉花糖页面新增返回主页按钮（和退出按钮不同的是返回按钮将会保存登录状态） | 修复当message.json不存在时会报错无法运行的问题', title='Release of 1.1.2', subtitle='2024-01-05')
+        ui.timeline_entry('登录密码使用sha256加密，源码仅明文储存sha256值 | storage_secret值改为sha256值（非强制要求）', title='Release of 1.1.3', subtitle='2024-01-05')
+        ui.timeline_entry('主页标题新增版本号 | 修改所有按钮的样式 | 部分组件颜色改为#E6354F | 投稿页面新增返回主页按钮 | 现在投稿可以输入自定义昵称，留空默认为投稿时间 | 棉花糖页面新增可切换的紧凑模式，默认为关，该模式可能会缓解当某一条棉花糖有过多换行符时会导致背景Y轴被严重拉伸的问题 | 尝试通过将注意事项部分组件的值改为HTML元素来缓解部分设备的排版问题 | 修复因为显示棉花糖的组件的值是HTML元素导致的棉花糖中的换行符无效的问题 | 修复一个在服务器反代环境下头像文件路径错误的问题', title='Release of 1.2.0', subtitle='2024-01-05')
+        ui.timeline_entry('优化发送投稿的函数（可能存在投稿后不会清空输入框内容的bug 但并未复现） | 现在账号登录缓存会在每天0点自动删除', title='Release of 1.2.1', subtitle='2024-01-07')
+        ui.timeline_entry('修复定时删除用户缓存在unix系统环境不生效的问题 | 调整注意事项文本', title='fix bug', subtitle='2024-01-08')
+        ui.timeline_entry('新增更新日志 | 修复如果没有证书，nginx配置文件可能有错误的问题 | 由于设计缺陷，定时删除用户缓存功能可能不会达成预期的结果', title='Release of 1.2.2', subtitle='2024-01-09', avatar='static/bg.jpg')
 
 @ui.page('/')
 # @ui.page('/{_:path}')
@@ -156,6 +173,8 @@ def main():
             # ui.badge("刷新或关闭后页面将立即销毁", color="lightpink", text_color="white").classes("text-xl absolute top-2/3 left-1/2 translate-x-[-50%] translate-y-[220%]")
             # ui.badge("如需多次忏悔，可在忏悔后继续忏悔", color="lightpink", text_color="white").classes("text-xl absolute top-2/3 left-1/2 translate-x-[-50%] translate-y-[330%]")
             # ui.badge("请勿忏悔违法、违规、禁播内容", color="lightpink", text_color="white").classes("text-xl absolute top-2/3 left-1/2 translate-x-[-50%] translate-y-[440%]")
+        
+        ui.button("装修日志", on_click=lambda: ui.open('/update'), color="#E6354F").classes("text-white bg-transparent")
 
     # 不可删除
     router.frame().classes('w-full')

@@ -3,7 +3,7 @@
  * Copyright © 2024 by Nya-WSL All Rights Reserved. 
  * @Date: 2024-01-01 02:52:15
  * @LastEditors: 狐日泽
- * @LastEditTime: 2024-01-05 15:21:42
+ * @LastEditTime: 2024-01-09 23:38:24
 -->
 # Confess Room
 
@@ -56,3 +56,5 @@ http://127.0.0.1:11452
 - `/messages` 棉花糖读取页面
 
 - `/{uuid}` 投稿页面
+
+- `/update` 更新日志

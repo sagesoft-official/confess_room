@@ -8,7 +8,7 @@ server {
     server_name domain;
 
     location / {
-        return 301 https://domain/nicegui/;
+        return 301 http://domain/nicegui/;
     }
     # nicegui不可删除
     location  ~ ^/nicegui/(.*)$ {
