@@ -3,7 +3,7 @@ Author: Nya-WSL
 Copyright © 2023 by Nya-WSL All Rights Reserved. 
 Date: 2023-12-31 16:43:50
 LastEditors: 狐日泽
-LastEditTime: 2024-01-10 13:12:25
+LastEditTime: 2024-01-10 13:46:42
 '''
 
 import os
@@ -20,7 +20,7 @@ from fastapi.responses import RedirectResponse
 # from starlette.middleware.base import BaseHTTPMiddleware
 
 # messages: List[Tuple[str, str, str, str]] = []
-version = "1.2.3.1"
+version = "1.2.3.2"
 app.add_static_files('/static', 'static')
 passwords = {'Sage': 'b10b88afa32c8c74941f600bb4507e6cbd5fb336bc82390ab0bbe9da07f08e90', 'sage': 'b10b88afa32c8c74941f600bb4507e6cbd5fb336bc82390ab0bbe9da07f08e90', 'sagesoft': '6a2c966fa4655342b1e8e2e2978a666bbb5971722c2f173ac13e848a0728f68f'}
 
@@ -111,7 +111,8 @@ def page():
         ui.timeline_entry('修复定时删除用户缓存在unix系统环境不生效的问题 | 调整注意事项文本', title='fix bug', subtitle='2024-01-08')
         ui.timeline_entry('新增更新日志 | 修复如果没有证书，nginx配置文件可能有错误的问题 | 由于设计缺陷，定时删除用户缓存功能可能不会达成预期的结果', title='Release of 1.2.2', subtitle='2024-01-09')
         ui.timeline_entry('新增字数限制 | 新增字数显示 | 注：标点符号包括在字数限制内 | 新增定时备份，现在将会每小时备份一次投稿数据', title='Release of 1.2.3', subtitle='2024-01-10')
-        ui.timeline_entry('采用新的定时方式修复定时备份会导致程序无法进入循环而卡死的问题', title='Release of 1.2.3.1', subtitle='2024-01-10', avatar='static/bg.jpg')
+        ui.timeline_entry('采用新的定时方式修复定时备份会导致程序无法进入循环而卡死的问题', title='Release of 1.2.3.1', subtitle='2024-01-10')
+        ui.timeline_entry('考虑到目前字数限制功能的局限性，现在超出字数限制仍然可以投稿', title='Release of 1.2.3.2', subtitle='2024-01-10', avatar='static/bg.jpg')
 
 @ui.page('/')
 # @ui.page('/{_:path}')
@@ -135,9 +136,6 @@ def main():
         def send():
             if text.value == '':
                 ui.notify('虚假的赎罪是会被修女诅咒的！', type="negative", position="top")
-                return
-            if len(text.value) > 1500:
-                error()
                 return
             if not os.path.exists('message.json'):
                 with open('message.json', 'w', encoding="utf-8") as f:
@@ -167,12 +165,17 @@ def main():
                     ui.button('取消', on_click=dialog.close, color='#E6354F').classes("text-white")
             dialog.open()
 
-        def error():
-            with ui.dialog() as dialog, ui.card():
-                ui.label('字数大于1500字！').classes('text-red')
-                with ui.row().classes('w-full'):
-                    ui.button('确定', on_click=dialog.close, color='#E6354F').classes("text-white")
-            dialog.open()
+        def check():
+            count = 1500
+            if len(text.value) > int(count):
+                with ui.dialog() as dialog, ui.card():
+                    ui.label(f'字数大于{count}字（包括标点符号和换行）！确定要投稿吗？').classes('text-red')
+                    with ui.row().classes('w-full'):
+                        ui.button('确定', on_click=lambda :send(), color='#E6354F').classes("text-white").on(type='click', handler=dialog.close)
+                        ui.button('取消', on_click=dialog.close, color='#E6354F').classes("text-white")
+                dialog.open()
+            else:
+                send()
 
         def change():
             count.classes('text-white')
@@ -185,7 +188,7 @@ def main():
             text = ui.textarea(placeholder='忏悔内容', on_change=lambda: change()).props('rounded outlined input-class=mx-3"').classes('flex-grow')
             # ui.button('忏悔', on_click=lambda: call(), color='#E6354F').classes("absolute top-1/2 left-1/2 translate-x-[-50%] text-white")
             with ui.row().classes("absolute-center text-white"):
-                ui.button('忏悔', on_click=lambda: send(), color='#E6354F').classes("text-white")
+                ui.button('忏悔', on_click=lambda: check(), color='#E6354F').classes("text-white")
                 ui.button('返回', on_click=lambda: back(), color='#E6354F').classes("text-white")
         count = ui.label('桑尾草原赎罪券投放处').classes('text-xs self-end mr-8 p-2').style('color: rgb(230 53 79)')
 
