@@ -3,10 +3,11 @@ Author: Nya-WSL
 Copyright © 2023 by Nya-WSL All Rights Reserved. 
 Date: 2023-12-31 16:43:50
 LastEditors: 狐日泽
-LastEditTime: 2024-01-10 13:46:42
+LastEditTime: 2024-01-11 01:33:46
 '''
 
 import os
+import sys
 import json
 import hashlib
 from uuid import uuid4
@@ -20,28 +21,38 @@ from fastapi.responses import RedirectResponse
 # from starlette.middleware.base import BaseHTTPMiddleware
 
 # messages: List[Tuple[str, str, str, str]] = []
-version = "1.2.3.2"
+version = "1.2.4"
 app.add_static_files('/static', 'static')
 passwords = {'Sage': 'b10b88afa32c8c74941f600bb4507e6cbd5fb336bc82390ab0bbe9da07f08e90', 'sage': 'b10b88afa32c8c74941f600bb4507e6cbd5fb336bc82390ab0bbe9da07f08e90', 'sagesoft': '6a2c966fa4655342b1e8e2e2978a666bbb5971722c2f173ac13e848a0728f68f'}
 
 def clear_user_data():
+    print("start mkdir crontab's log dir") # debug
     if not os.path.exists('/home/cron'):
         os.system('mkdir /home/cron')
-    else:
-        cmd= '@daily rm -rf /var/www/sage/sendbox/.nicegui/storage_user_* >> "/home/cron/confess.log" 2>&1 & # confess_room job'
-        cron_data = "@daily rm -rf /var/www/sage/sendbox/.nicegui/storage_user_* >> /home/cron/confess.log 2>&1 & # confess_room job\n"
-        with open('/var/spool/cron/crontabs/root', 'r', encoding="utf-8") as f:
-            cron = f.readlines()
-            if not cron_data in cron:
-                os.system(f'crontab -l > cron_tmp && echo "{cmd}" >> cron_tmp && crontab cron_tmp && rm -f cron_tmp')
+
+    print("start writing crontab's tasks") # debug
+    cmd= '@daily rm -rf /var/www/sage/sendbox/.nicegui/storage_user_* >> "/home/cron/confess.log" 2>&1 & # confess_room job'
+    cron_data = "@daily rm -rf /var/www/sage/sendbox/.nicegui/storage_user_* >> /home/cron/confess.log 2>&1 & # confess_room job\n"
+    with open('/var/spool/cron/crontabs/root', 'r', encoding="utf-8") as f:
+        cron = f.readlines()
+        if not cron_data in cron:
+            os.system(f'crontab -l > cron_tmp && echo "{cmd}" >> cron_tmp && crontab cron_tmp && rm -f cron_tmp')
 
 def backup():
+    print("start writing backup's tasks") # debug
     cmd= '@hourly cp -r /var/www/sage/sendbox/message.json /var/www/sage/sendbox/message.json.bak >> "/home/cron/confess_bak.log" 2>&1 & # confess_room job'
     cron_data = "@hourly cp -r /var/www/sage/sendbox/message.json /var/www/sage/sendbox/message.json.bak >> /home/cron/confess_bak.log 2>&1 & # confess_room job\n"
     with open('/var/spool/cron/crontabs/root', 'r', encoding="utf-8") as f:
         cron = f.readlines()
         if not cron_data in cron:
             os.system(f'crontab -l > cron_tmp && echo "{cmd}" >> cron_tmp && crontab cron_tmp && rm -f cron_tmp')
+
+def init():
+    osInfo = sys.platform
+    print(osInfo) # debug
+    if osInfo == "linux": # 系统类型
+        clear_user_data()
+        backup()
 
 @ui.page('/login', title="桥洞教堂忏悔室登记处")
 def login() -> Optional[RedirectResponse]:
@@ -92,6 +103,7 @@ def page():
                     else:
                         ui.chat_message(value, avatar='static/bg.jpg').props('bg-color="green-1"').classes('text-h6')
                 ui.separator()
+    # app.on_disconnect(app.storage.user.clear())
 
 @ui.page('/update', title="桥洞教堂忏悔室装修日志")
 def page():
@@ -112,7 +124,8 @@ def page():
         ui.timeline_entry('新增更新日志 | 修复如果没有证书，nginx配置文件可能有错误的问题 | 由于设计缺陷，定时删除用户缓存功能可能不会达成预期的结果', title='Release of 1.2.2', subtitle='2024-01-09')
         ui.timeline_entry('新增字数限制 | 新增字数显示 | 注：标点符号包括在字数限制内 | 新增定时备份，现在将会每小时备份一次投稿数据', title='Release of 1.2.3', subtitle='2024-01-10')
         ui.timeline_entry('采用新的定时方式修复定时备份会导致程序无法进入循环而卡死的问题', title='Release of 1.2.3.1', subtitle='2024-01-10')
-        ui.timeline_entry('考虑到目前字数限制功能的局限性，现在超出字数限制仍然可以投稿', title='Release of 1.2.3.2', subtitle='2024-01-10', avatar='static/bg.jpg')
+        ui.timeline_entry('考虑到目前字数限制功能的局限性，现在超出字数限制仍然可以投稿', title='Release of 1.2.3.2', subtitle='2024-01-10')
+        ui.timeline_entry('读取棉花糖新增字数显示 | 修复定时清理用户缓存功能的一个逻辑错误，该错误会导致如果自动新建crontab的日志文件夹，程序就不会将定时任务写入crontab | 尝试优化初始化流程，避免初始化函数被执行两次 | 修复程序无法在Windows运行的问题，现在如果是Windows或macOS系统（不确定），将不会定时备份和清理用户缓存 | 注：这次修复只是为了方便debug，本程序的设计初衷并没有考虑Windows或macOS，目前也没有计划适配上述系统', title='Release of 1.2.4', subtitle='2024-01-11', avatar='static/bg.jpg')
 
 @ui.page('/')
 # @ui.page('/{_:path}')
@@ -145,9 +158,9 @@ def main():
                 with open('message.json', 'r', encoding="utf-8") as f:
                     message_json = json.load(f)
             if author.value == "":
-                message_json[f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"] = text.value
+                message_json[f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | {len(text.value)}字"] = text.value
             else:
-                message_json[f"{author.value} | {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"] = text.value
+                message_json[f"{author.value} | {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | {len(text.value)}字"] = text.value
             with open('message.json', 'w+', encoding="utf-8") as f:
                 json.dump(message_json, f, indent=4, ensure_ascii=False)
             ui.notify('修女会保佑你的...', type="positive", position="top")
@@ -208,6 +221,7 @@ def main():
     # 不可删除
     router.frame().classes('w-full')
 
-clear_user_data()
-backup()
+if __name__ == '__mp_main__':
+    init()
+
 ui.run(title="桥洞教堂忏悔室", favicon="static/icon.ico", host="0.0.0.0", port=11452, language="zh-CN", show=False, storage_secret='c2b95787b44c084fc7c7d2c8422917913e0b1a673892f7d1f644bcf73c133410')
