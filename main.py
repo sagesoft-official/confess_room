@@ -3,13 +3,12 @@ Author: Nya-WSL
 Copyright © 2023 by Nya-WSL All Rights Reserved. 
 Date: 2023-12-31 16:43:50
 LastEditors: 狐日泽
-LastEditTime: 2024-01-10 12:57:19
+LastEditTime: 2024-01-10 13:09:15
 '''
 
 import os
 import json
 import hashlib
-import asyncio
 from uuid import uuid4
 from router import Router
 from typing import Optional
@@ -21,7 +20,7 @@ from fastapi.responses import RedirectResponse
 # from starlette.middleware.base import BaseHTTPMiddleware
 
 # messages: List[Tuple[str, str, str, str]] = []
-version = "1.2.3"
+version = "1.2.3.1"
 app.add_static_files('/static', 'static')
 passwords = {'Sage': 'b10b88afa32c8c74941f600bb4507e6cbd5fb336bc82390ab0bbe9da07f08e90', 'sage': 'b10b88afa32c8c74941f600bb4507e6cbd5fb336bc82390ab0bbe9da07f08e90', 'sagesoft': '6a2c966fa4655342b1e8e2e2978a666bbb5971722c2f173ac13e848a0728f68f'}
 
@@ -36,10 +35,13 @@ def clear_user_data():
             if not cron_data in cron:
                 os.system(f'crontab -l > cron_tmp && echo "{cmd}" >> cron_tmp && crontab cron_tmp && rm -f cron_tmp')
 
-async def backup():
-    while True:
-        await asyncio.sleep(3600)
-        os.system(f'cp -r message.json message.json.bak.{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}')
+def backup():
+    cmd= '@hourly cp -r /var/www/sage/sendbox/message.json /var/www/sage/sendbox/message.json.bak >> "/home/cron/confess_bak.log" 2>&1 & # confess_room job'
+    cron_data = "@hourly cp -r /var/www/sage/sendbox/message.json /var/www/sage/sendbox/message.json.bak >> /home/cron/confess_bak.log 2>&1 & # confess_room job\n"
+    with open('/var/spool/cron/crontabs/root', 'r', encoding="utf-8") as f:
+        cron = f.readlines()
+        if not cron_data in cron:
+            os.system(f'crontab -l > cron_tmp && echo "{cmd}" >> cron_tmp && crontab cron_tmp && rm -f cron_tmp')
 
 @ui.page('/login', title="桥洞教堂忏悔室登记处")
 def login() -> Optional[RedirectResponse]:
