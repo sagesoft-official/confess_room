@@ -3,7 +3,7 @@ Author: Nya-WSL
 Copyright © 2023 by Nya-WSL All Rights Reserved. 
 Date: 2023-12-31 16:43:50
 LastEditors: 狐日泽
-LastEditTime: 2024-01-11 01:33:46
+LastEditTime: 2024-01-11 01:40:42
 '''
 
 import os
@@ -26,25 +26,28 @@ app.add_static_files('/static', 'static')
 passwords = {'Sage': 'b10b88afa32c8c74941f600bb4507e6cbd5fb336bc82390ab0bbe9da07f08e90', 'sage': 'b10b88afa32c8c74941f600bb4507e6cbd5fb336bc82390ab0bbe9da07f08e90', 'sagesoft': '6a2c966fa4655342b1e8e2e2978a666bbb5971722c2f173ac13e848a0728f68f'}
 
 def clear_user_data():
-    print("start mkdir crontab's log dir") # debug
+    print("try to mkdir crontab's log dir")
     if not os.path.exists('/home/cron'):
+        print("start mkdir crontab's log dir") # debug
         os.system('mkdir /home/cron')
 
-    print("start writing crontab's tasks") # debug
+    print("try to clear user data") # debug
     cmd= '@daily rm -rf /var/www/sage/sendbox/.nicegui/storage_user_* >> "/home/cron/confess.log" 2>&1 & # confess_room job'
     cron_data = "@daily rm -rf /var/www/sage/sendbox/.nicegui/storage_user_* >> /home/cron/confess.log 2>&1 & # confess_room job\n"
     with open('/var/spool/cron/crontabs/root', 'r', encoding="utf-8") as f:
         cron = f.readlines()
         if not cron_data in cron:
+            print("start writing crontab's tasks") # debug
             os.system(f'crontab -l > cron_tmp && echo "{cmd}" >> cron_tmp && crontab cron_tmp && rm -f cron_tmp')
 
 def backup():
-    print("start writing backup's tasks") # debug
+    print("try to backup messages") # debug
     cmd= '@hourly cp -r /var/www/sage/sendbox/message.json /var/www/sage/sendbox/message.json.bak >> "/home/cron/confess_bak.log" 2>&1 & # confess_room job'
     cron_data = "@hourly cp -r /var/www/sage/sendbox/message.json /var/www/sage/sendbox/message.json.bak >> /home/cron/confess_bak.log 2>&1 & # confess_room job\n"
     with open('/var/spool/cron/crontabs/root', 'r', encoding="utf-8") as f:
         cron = f.readlines()
         if not cron_data in cron:
+            print("start writing backup's tasks") # debug
             os.system(f'crontab -l > cron_tmp && echo "{cmd}" >> cron_tmp && crontab cron_tmp && rm -f cron_tmp')
 
 def init():
