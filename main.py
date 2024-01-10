@@ -3,7 +3,7 @@ Author: Nya-WSL
 Copyright © 2023 by Nya-WSL All Rights Reserved. 
 Date: 2023-12-31 16:43:50
 LastEditors: 狐日泽
-LastEditTime: 2024-01-10 13:09:15
+LastEditTime: 2024-01-10 13:12:25
 '''
 
 import os
@@ -110,8 +110,8 @@ def page():
         ui.timeline_entry('优化发送投稿的函数（可能存在投稿后不会清空输入框内容的bug 但并未复现） | 现在账号登录缓存会在每天0点自动删除', title='Release of 1.2.1', subtitle='2024-01-07')
         ui.timeline_entry('修复定时删除用户缓存在unix系统环境不生效的问题 | 调整注意事项文本', title='fix bug', subtitle='2024-01-08')
         ui.timeline_entry('新增更新日志 | 修复如果没有证书，nginx配置文件可能有错误的问题 | 由于设计缺陷，定时删除用户缓存功能可能不会达成预期的结果', title='Release of 1.2.2', subtitle='2024-01-09')
-        ui.timeline_entry('新增字数限制 | 新增字数显示 | 注：标点符号包括在字数限制内 | 新增定时备份，现在将会每小时备份一次投稿数据', title='Release of 1.2.3', subtitle='2024-01-10', avatar='static/bg.jpg')
-
+        ui.timeline_entry('新增字数限制 | 新增字数显示 | 注：标点符号包括在字数限制内 | 新增定时备份，现在将会每小时备份一次投稿数据', title='Release of 1.2.3', subtitle='2024-01-10')
+        ui.timeline_entry('采用新的定时方式修复定时备份会导致程序无法进入循环而卡死的问题', title='Release of 1.2.3.1', subtitle='2024-01-10', avatar='static/bg.jpg')
 
 @ui.page('/')
 # @ui.page('/{_:path}')
