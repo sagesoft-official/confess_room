@@ -3,12 +3,13 @@ Author: Nya-WSL
 Copyright © 2023 by Nya-WSL All Rights Reserved. 
 Date: 2023-12-31 16:43:50
 LastEditors: 狐日泽
-LastEditTime: 2024-01-09 23:35:31
+LastEditTime: 2024-01-10 12:57:19
 '''
 
 import os
 import json
 import hashlib
+import asyncio
 from uuid import uuid4
 from router import Router
 from typing import Optional
@@ -20,7 +21,7 @@ from fastapi.responses import RedirectResponse
 # from starlette.middleware.base import BaseHTTPMiddleware
 
 # messages: List[Tuple[str, str, str, str]] = []
-version = "1.2.2"
+version = "1.2.3"
 app.add_static_files('/static', 'static')
 passwords = {'Sage': 'b10b88afa32c8c74941f600bb4507e6cbd5fb336bc82390ab0bbe9da07f08e90', 'sage': 'b10b88afa32c8c74941f600bb4507e6cbd5fb336bc82390ab0bbe9da07f08e90', 'sagesoft': '6a2c966fa4655342b1e8e2e2978a666bbb5971722c2f173ac13e848a0728f68f'}
 
@@ -34,6 +35,11 @@ def clear_user_data():
             cron = f.readlines()
             if not cron_data in cron:
                 os.system(f'crontab -l > cron_tmp && echo "{cmd}" >> cron_tmp && crontab cron_tmp && rm -f cron_tmp')
+
+async def backup():
+    while True:
+        await asyncio.sleep(3600)
+        os.system(f'cp -r message.json message.json.bak.{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}')
 
 @ui.page('/login', title="桥洞教堂忏悔室登记处")
 def login() -> Optional[RedirectResponse]:
@@ -101,7 +107,9 @@ def page():
         ui.timeline_entry('主页标题新增版本号 | 修改所有按钮的样式 | 部分组件颜色改为#E6354F | 投稿页面新增返回主页按钮 | 现在投稿可以输入自定义昵称，留空默认为投稿时间 | 棉花糖页面新增可切换的紧凑模式，默认为关，该模式可能会缓解当某一条棉花糖有过多换行符时会导致背景Y轴被严重拉伸的问题 | 尝试通过将注意事项部分组件的值改为HTML元素来缓解部分设备的排版问题 | 修复因为显示棉花糖的组件的值是HTML元素导致的棉花糖中的换行符无效的问题 | 修复一个在服务器反代环境下头像文件路径错误的问题', title='Release of 1.2.0', subtitle='2024-01-05')
         ui.timeline_entry('优化发送投稿的函数（可能存在投稿后不会清空输入框内容的bug 但并未复现） | 现在账号登录缓存会在每天0点自动删除', title='Release of 1.2.1', subtitle='2024-01-07')
         ui.timeline_entry('修复定时删除用户缓存在unix系统环境不生效的问题 | 调整注意事项文本', title='fix bug', subtitle='2024-01-08')
-        ui.timeline_entry('新增更新日志 | 修复如果没有证书，nginx配置文件可能有错误的问题 | 由于设计缺陷，定时删除用户缓存功能可能不会达成预期的结果', title='Release of 1.2.2', subtitle='2024-01-09', avatar='static/bg.jpg')
+        ui.timeline_entry('新增更新日志 | 修复如果没有证书，nginx配置文件可能有错误的问题 | 由于设计缺陷，定时删除用户缓存功能可能不会达成预期的结果', title='Release of 1.2.2', subtitle='2024-01-09')
+        ui.timeline_entry('新增字数限制 | 新增字数显示 | 注：标点符号包括在字数限制内 | 新增定时备份，现在将会每小时备份一次投稿数据', title='Release of 1.2.3', subtitle='2024-01-10', avatar='static/bg.jpg')
+
 
 @ui.page('/')
 # @ui.page('/{_:path}')
@@ -125,6 +133,9 @@ def main():
         def send():
             if text.value == '':
                 ui.notify('虚假的赎罪是会被修女诅咒的！', type="negative", position="top")
+                return
+            if len(text.value) > 1500:
+                error()
                 return
             if not os.path.exists('message.json'):
                 with open('message.json', 'w', encoding="utf-8") as f:
@@ -154,14 +165,27 @@ def main():
                     ui.button('取消', on_click=dialog.close, color='#E6354F').classes("text-white")
             dialog.open()
 
+        def error():
+            with ui.dialog() as dialog, ui.card():
+                ui.label('字数大于1500字！').classes('text-red')
+                with ui.row().classes('w-full'):
+                    ui.button('确定', on_click=dialog.close, color='#E6354F').classes("text-white")
+            dialog.open()
+
+        def change():
+            count.classes('text-white')
+            count.set_text(f'{len(text.value)}/1500')
+            if len(text.value) > 1500:
+                count.classes('text-red')
+
         with ui.row().classes('w-full no-wrap'):
             author = ui.input(label="称呼(非必填)").props('input-class=mx-3').classes("absolute-center translate-x-[-50%] translate-y-[-200%]")
-            text = ui.textarea(placeholder='忏悔内容').props('rounded outlined input-class=mx-3"').classes('flex-grow')
+            text = ui.textarea(placeholder='忏悔内容', on_change=lambda: change()).props('rounded outlined input-class=mx-3"').classes('flex-grow')
             # ui.button('忏悔', on_click=lambda: call(), color='#E6354F').classes("absolute top-1/2 left-1/2 translate-x-[-50%] text-white")
             with ui.row().classes("absolute-center text-white"):
                 ui.button('忏悔', on_click=lambda: send(), color='#E6354F').classes("text-white")
                 ui.button('返回', on_click=lambda: back(), color='#E6354F').classes("text-white")
-        ui.markdown('桑尾草原赎罪券投放处').classes('text-xs self-end mr-8 p-2').style('color: rgb(230 53 79)')
+        count = ui.label('桑尾草原赎罪券投放处').classes('text-xs self-end mr-8 p-2').style('color: rgb(230 53 79)')
 
     ui.query('body').style('background: url("static/bg.jpg") 0px 0px/cover')
     with ui.row():
@@ -180,4 +204,5 @@ def main():
     router.frame().classes('w-full')
 
 clear_user_data()
+backup()
 ui.run(title="桥洞教堂忏悔室", favicon="static/icon.ico", host="0.0.0.0", port=11452, language="zh-CN", show=False, storage_secret='c2b95787b44c084fc7c7d2c8422917913e0b1a673892f7d1f644bcf73c133410')
