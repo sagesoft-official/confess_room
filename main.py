@@ -3,19 +3,19 @@ Author: Nya-WSL
 Copyright © 2023-2024 by Nya-WSL All Rights Reserved. 
 Date: 2023-12-31 16:43:50
 LastEditors: 狐日泽
-LastEditTime: 2024-01-16 03:58:03
+LastEditTime: 2024-01-16 15:03:56
 '''
 
 import function
 import confess_page
+import update_page
 from nicegui import ui, app
 from typing import Optional
 from fastapi.responses import RedirectResponse
 
 # messages: List[Tuple[str, str, str, str]] = []
-version = "1.2.5"
+version = "1.2.6"
 app.add_static_files('/static', 'static')
-passwords = {'Sage': 'b10b88afa32c8c74941f600bb4507e6cbd5fb336bc82390ab0bbe9da07f08e90', 'sage': 'b10b88afa32c8c74941f600bb4507e6cbd5fb336bc82390ab0bbe9da07f08e90', 'sagesoft': '6a2c966fa4655342b1e8e2e2978a666bbb5971722c2f173ac13e848a0728f68f'}
 
 @ui.page('/login', title="桥洞教堂忏悔室登记处")
 def page() -> Optional[RedirectResponse]:
@@ -33,7 +33,7 @@ def page():
 
 @ui.page('/update', title="桥洞教堂忏悔室装修日志")
 def page():
-    confess_page.update()
+    update_page.page()
 
 @ui.page('/')
 # @ui.page('/{_:path}')
