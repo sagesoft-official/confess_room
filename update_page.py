@@ -1,3 +1,11 @@
+'''
+Author: Nya-WSL
+Copyright © 2024 by Nya-WSL All Rights Reserved. 
+Date: 2024-01-16 15:02:50
+LastEditors: 狐日泽
+LastEditTime: 2024-01-17 17:10:44
+'''
+
 from nicegui import ui
 
 def page():
@@ -21,4 +29,5 @@ def page():
         ui.timeline_entry('考虑到目前字数限制功能的局限性，现在超出字数限制仍然可以投稿', title='Release of 1.2.3.2', subtitle='2024-01-10')
         ui.timeline_entry('读取棉花糖新增字数显示 | 修复定时清理用户缓存功能的一个逻辑错误，该错误会导致如果自动新建crontab的日志文件夹，程序就不会将定时任务写入crontab | 尝试优化初始化流程，避免初始化函数被执行两次 | 修复程序无法在Windows运行的问题，现在如果是Windows或macOS系统（不确定），将不会定时备份和清理用户缓存 | 注：这次修复只是为了方便debug，本程序的设计初衷并没有考虑Windows或macOS，目前也没有计划适配上述系统', title='Release of 1.2.4', subtitle='2024-01-11')
         ui.timeline_entry('优化核心代码的可读性，现在所有路径的核心代码和页面布局均在confess_page.py中 | 初始化函数移入function.py | 初始化函数debug优化 | 现在投稿页面点击返回时如果投稿内容为空将无需二次确认', title='Release of 1.2.5', subtitle='2024-01-16')
-        ui.timeline_entry(r'用户和投稿数据移入数据库 | 定时备份适配数据库 |  更新日志改为独立模块,不再和子路径为同一个模块 | 优化棉花糖的显示效果,现在"\n"和"\\n"将会被替换为"\n\n" | 注：由于后台不公开，需要手动写入用户数据到数据库', title='Release of 1.2.6', subtitle='2024-01-16', avatar='static/bg.jpg')
+        ui.timeline_entry(r'用户和投稿数据移入数据库 | 定时备份适配数据库 |  更新日志改为独立模块,不再和子路径为同一个模块 | 优化棉花糖的显示效果,现在"\n"和"\\n"将会被替换为"\n\n" | 注：由于后台不公开，需要手动写入用户数据到数据库', title='Release of 1.2.6', subtitle='2024-01-16')
+        ui.timeline_entry('优化数据库模块代码 | 重写备份模块，现在除了本地备份还会将数据库文件上传到七牛云', title='Release of 1.2.7', subtitle='2024-01-17', avatar='static/bg.jpg')

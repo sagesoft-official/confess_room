@@ -3,7 +3,7 @@ Author: Nya-WSL
 Copyright © 2024 by Nya-WSL All Rights Reserved. 
 Date: 2024-01-16 12:45:32
 LastEditors: 狐日泽
-LastEditTime: 2024-01-16 14:55:33
+LastEditTime: 2024-01-17 14:45:37
 '''
 
 import sqlite3
@@ -28,7 +28,7 @@ def check_user(user):
     conn = sqlite3.connect(DatabasePath)
     c = conn.cursor()
     # 获取passwd
-    result = c.execute(f"SELECT * FROM user WHERE user = '%s'" % user).fetchone()
+    result = c.execute("SELECT * FROM user WHERE user = '%s'" % user).fetchone()
     #关闭连接
     conn.close()
     return result
@@ -38,7 +38,7 @@ def check_message():
     conn.row_factory = dict_factory
     c = conn.cursor()
     # 获取投稿
-    result = c.execute(f"SELECT * FROM messages").fetchall()
+    result = c.execute("SELECT * FROM messages").fetchall()
     #关闭连接
     conn.close()
     return result
