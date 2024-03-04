@@ -3,7 +3,7 @@ Author: Nya-WSL
 Copyright © 2024 by Nya-WSL All Rights Reserved. 
 Date: 2024-01-16 02:40:38
 LastEditors: 狐日泽
-LastEditTime: 2024-01-16 15:03:14
+LastEditTime: 2024-03-04 13:01:24
 '''
 
 import os
@@ -21,6 +21,7 @@ def messages():
         ui.button('Quit', on_click=lambda: (app.storage.user.clear(), ui.open('/'))).classes('bg-transparent')
         ui.button('Back', on_click=lambda: ui.open('/')).classes('bg-transparent')
         show_module = ui.switch(text="紧凑模式", value=False, on_change=lambda: ui.open("/messages")).bind_value(app.storage.user, "show_module")
+        show_module.set_visibility(False)
     if not os.path.exists('confess_room.db'):
         confess_db.create()
         message_list = []
