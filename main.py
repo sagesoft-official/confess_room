@@ -14,7 +14,7 @@ from typing import Optional
 from fastapi.responses import RedirectResponse
 
 # messages: List[Tuple[str, str, str, str]] = []
-version = "1.2.7"
+version = "1.2.7.1"
 app.add_static_files('/static', 'static')
 
 @ui.page('/login', title="桥洞教堂忏悔室登记处")
