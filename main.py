@@ -1,11 +1,3 @@
-'''
-Author: Nya-WSL
-Copyright © 2023-2024 by Nya-WSL All Rights Reserved. 
-Date: 2023-12-31 16:43:50
-LastEditors: 狐日泽
-LastEditTime: 2024-01-17 14:44:45
-'''
-
 import function
 import confess_page
 import update_page
@@ -14,7 +6,7 @@ from typing import Optional
 from fastapi.responses import RedirectResponse
 
 # messages: List[Tuple[str, str, str, str]] = []
-version = "1.2.7.1"
+version = "1.2.8"
 app.add_static_files('/static', 'static')
 
 @ui.page('/login', title="桥洞教堂忏悔室登记处")

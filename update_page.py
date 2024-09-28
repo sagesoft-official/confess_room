@@ -10,8 +10,8 @@ from nicegui import ui
 
 def page():
     with ui.row():
-        ui.button("返回主页", on_click=lambda: ui.open('/'), color="#E6354F").classes("text-white")
-        ui.button("GitHub", on_click=lambda: ui.open('https://github.com/sagesoft-official/confess_room', new_tab=True), color="#E6354F").classes("text-white")
+        ui.button("返回主页", on_click=lambda: ui.navigate.to('/'), color="#E6354F").classes("text-white")
+        ui.button("GitHub", on_click=lambda: ui.navigate.to('https://github.com/sagesoft-official/confess_room', new_tab=True), color="#E6354F").classes("text-white")
     with ui.timeline(side='right', layout='comfortable', color='red'):
         ui.timeline_entry('Confess Room Decoration Log', heading=True)
         ui.timeline_entry(title='Initial commit', subtitle='2023-12-31', icon='rocket')

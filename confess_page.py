@@ -1,11 +1,3 @@
-'''
-Author: Nya-WSL
-Copyright © 2024 by Nya-WSL All Rights Reserved. 
-Date: 2024-01-16 02:40:38
-LastEditors: 狐日泽
-LastEditTime: 2024-03-04 13:01:24
-'''
-
 import os
 import hashlib
 import confess_db
@@ -18,9 +10,9 @@ from main import version
 def messages():
     ui.query('body').style('background: url("static/bg.jpg") 0px 0px/cover')
     with ui.row():
-        ui.button('Quit', on_click=lambda: (app.storage.user.clear(), ui.open('/'))).classes('bg-transparent')
-        ui.button('Back', on_click=lambda: ui.open('/')).classes('bg-transparent')
-        show_module = ui.switch(text="紧凑模式", value=False, on_change=lambda: ui.open("/messages")).bind_value(app.storage.user, "show_module")
+        ui.button('Quit', on_click=lambda: (app.storage.user.clear(), ui.navigate.to('/'))).classes('bg-transparent')
+        ui.button('Back', on_click=lambda: ui.navigate.to('/')).classes('bg-transparent')
+        show_module = ui.switch(text="紧凑模式", value=False, on_change=lambda: ui.navigate.to("/messages")).bind_value(app.storage.user, "show_module")
         show_module.set_visibility(False)
     if not os.path.exists('confess_room.db'):
         confess_db.create()
@@ -46,7 +38,7 @@ def login():
     def try_login() -> None:
         if confess_db.check_user(username.value)[1] == hashlib.sha256(str(password.value).encode('utf-8')).hexdigest():
             app.storage.user.update({'user': username.value, 'authenticated': True})
-            ui.open(app.storage.user.get('referrer_path', '/messages'))
+            ui.navigate.to(app.storage.user.get('referrer_path', '/messages'))
         else:
             ui.notify('来访登记簿上没有您的名字哦', color='negative')
 
@@ -57,7 +49,7 @@ def login():
         password = ui.input('密码', password=True, password_toggle_button=True).on('keydown.enter', try_login)
         with ui.row():
             ui.button('登记', on_click=try_login)
-            ui.button('返回', on_click=lambda: ui.open("/"))
+            ui.button('返回', on_click=lambda: ui.navigate.to("/"))
 
 def main():
     router = Router()
@@ -93,12 +85,12 @@ def main():
             with ui.dialog() as dialog, ui.card():
                 ui.label('忏悔内容将不会被保存，确定要返回吗？')
                 with ui.row().classes('w-full'):
-                    ui.button('确定', on_click=lambda: ui.open('/'), color='#E6354F').classes("text-white")
+                    ui.button('确定', on_click=lambda: ui.navigate.to('/'), color='#E6354F').classes("text-white")
                     ui.button('取消', on_click=dialog.close, color='#E6354F').classes("text-white")
             if not text.value == "":
                 dialog.open()
             else:
-                ui.open('/')
+                ui.navigate.to('/')
 
         def check():
             count = 1500
@@ -130,7 +122,7 @@ def main():
     ui.query('body').style('background: url("static/bg.jpg") 0px 0px/cover')
     with ui.row():
         send_button = ui.button('向桥洞修女发起忏悔', on_click=lambda: router.open(index), color="#E6354F").classes("absolute top-1/2 left-1/2 translate-x-[-50%] text-white")
-        login_button = ui.button('桥洞教堂忏悔录', on_click=lambda: ui.open('/login'), color="#E6354F").classes("absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[200%] text-white bg-transparent")
+        login_button = ui.button('桥洞教堂忏悔录', on_click=lambda: ui.navigate.to('/login'), color="#E6354F").classes("absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[200%] text-white bg-transparent")
         with ui.badge(outline=True, color="", text_color="#E6354F").classes("absolute top-2/3 left-1/2 translate-x-[-50%]"):
             ui.html('<center>注意事项<br>忏悔页面阅后即焚<br>刷新或关闭后页面将立即销毁<br>如非必要请勿在忏悔界面撰写投稿<br>您应该在撰写完毕后直接复制过来<br>如需多次忏悔，可在忏悔后继续忏悔</center>').classes('text-xl')
             # ui.badge("忏悔页面阅后即焚", color="lightpink", text_color="white").classes("text-xl absolute top-2/3 left-1/2 translate-x-[-50%] translate-y-[110%]")
@@ -138,7 +130,7 @@ def main():
             # ui.badge("如需多次忏悔，可在忏悔后继续忏悔", color="lightpink", text_color="white").classes("text-xl absolute top-2/3 left-1/2 translate-x-[-50%] translate-y-[330%]")
             # ui.badge("请勿忏悔违法、违规、禁播内容", color="lightpink", text_color="white").classes("text-xl absolute top-2/3 left-1/2 translate-x-[-50%] translate-y-[440%]")
         
-        ui.button("装修日志", on_click=lambda: ui.open('/update'), color="#E6354F").classes("text-white bg-transparent")
+        ui.button("装修日志", on_click=lambda: ui.navigate.to('/update'), color="#E6354F").classes("text-white bg-transparent")
 
     # 不可删除
     router.frame().classes('w-full')
