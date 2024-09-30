@@ -2,7 +2,7 @@
     "version": 2,
     "builds": [
         {
-            "src": "/(.py)",
+            "src": "*.py",
             "use": "@vercel/python"
         },
         {
@@ -10,7 +10,7 @@
             "use": "@vercel/static"
         },
         {
-            "src": "/(.json)",
+            "src": "*.js",
             "use": "@vercel/javascript"
         }
     ],
